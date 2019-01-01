@@ -5,3 +5,5 @@ ansible_user=pi
 
 [baby]
 babymonitor ansible_user=pi
+[baby:vars]
+protected_storage=~/.protected/ansible
