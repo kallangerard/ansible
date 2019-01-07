@@ -3,7 +3,7 @@
   apt:
     update_cache: yes
     upgrade: full
-    cache_valid_time: 300
+    cache_valid_time: 3600
 
 - name: Install packages
   apt: 
@@ -20,3 +20,36 @@
       - alsa-base
       - alsa-tools
       - alsa-utils
+
+- name: Install Node.js
+  tasks:
+    - name: add apt key for nodesource
+      apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        state: present
+
+    - name: Add Nodesource Apt Sources Version 6
+      apt_repository:
+        repo: "{{ repository }}"
+        state: present
+      vars:
+        repository:
+          - "deb https://deb.nodesource.com/node_6.x {{ ansible_distribution_release|lower }} main"
+          - "deb-src https://deb.nodesource.com/node_6.x {{ ansible_distribution_release|lower }} main"
+
+    
+    - name: Install NodeJS and NPM
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - nodejs
+          - nodejs-legacy
+          - npm
+
+    - name: Enable RPI Camera
+      lineinfile:
+        path: /etc/modules
+        line: bcm2832_v412
+        state: present
