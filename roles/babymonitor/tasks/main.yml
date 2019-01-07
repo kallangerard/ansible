@@ -1,0 +1,5 @@
+---
+# tasks file for babymonitor
+- name: configuring base-os
+  include: base-os.yml
+  
