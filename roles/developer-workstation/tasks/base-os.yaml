@@ -1,0 +1,47 @@
+---
+- name: Ensure os is up to date
+  apt:
+    update_cache: yes
+    upgrade: full
+    cache_valid_time: 300
+
+- name: Installing Visual Studio Code
+  tasks:
+
+    - name: Add rpm key for VSC
+      rpm_key:
+        key: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Update cache
+      apt:
+       update_cache: yes
+       
+    - name: Install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Install Visual Studio Code package
+      apt:
+        name: code
+        state: present
+
+- name: Installing packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - ansible
+      - bash-completion
+      - curl
+      - git
+      - htop
+      - ranger
+      - python
+      - smartmontool
+      - snapd
+      - tmux
+      - tree
+      - wget
