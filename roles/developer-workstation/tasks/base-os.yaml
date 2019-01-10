@@ -27,6 +27,10 @@
         name: code
         state: present
 
+- name: Installing Google Chrome
+  apt:
+    deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
 - name: Installing packages
   apt:
     name: "{{ packages }}"
