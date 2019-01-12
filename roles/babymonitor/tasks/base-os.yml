@@ -53,3 +53,44 @@
         path: /etc/modules
         line: bcm2832_v412
         state: present
+
+- name: Install .local domain resolution
+  apt:
+    name: avahi-daemon
+    state: prsesent
+
+- name: Clone FruitNanny source code
+  tasks:
+    - name: Making directory for FruitNanny source code
+      file:
+        path: /opt/fruitnanny
+        owner: pi
+        group: pi
+        state: directory
+    
+    - name: Cloning FruitNanny source code
+      git:
+        repo: https://github.com/ivadim/fruitnanny
+        dest: /opt/fruitnanny
+        clone: yes    
+
+- name: Install Audio and Video Pipeline
+  tasks:
+    # - name: Install packages
+    #   apt:
+    #     name: "{{ packages }}"
+    #     state: present
+    #   vars:
+    #     packages:
+    #       - gstreamer1.0-tools
+    #       - gstreamer1.0-plugins-good
+    #       - gstreamer1.0-plugins-bad
+    #       - gstreamer1.0-plugins-ugly
+    #       - gstreamer1.0-plugins-bad
+    #       - libgstreamer1.0-dev
+    #       - libgstreamer-plugins-base1.0-dev
+    #       - gstreamer1.0-alsa
+    - name: Install gstreamer
+      apt:
+        name: gstreamer1.0
+        state: present
