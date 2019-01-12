@@ -28,9 +28,16 @@
         state: present
 
 - name: Installing Google Chrome
-  apt:
-    deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-
+  tasks:
+    - name: Check if Google Chrome Stable is installed
+      command: dpkg-query -s systemd | grep 'install ok installed'
+      register: dpkg_check
+    
+    - name: Install Google Chrome
+        apt:
+          deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        when: dpkg_check.rc == 1
+        
 - name: Installing packages
   apt:
     name: "{{ packages }}"
