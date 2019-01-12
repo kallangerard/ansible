@@ -20,6 +20,10 @@
       - alsa-base
       - alsa-tools
       - alsa-utils
+      - fail2ban
+      - logwatch
+      - mosh
+      
 
 - name: Install Node.js
   tasks:
