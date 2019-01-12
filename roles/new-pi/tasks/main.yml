@@ -4,21 +4,21 @@
 - name: Expanding Filesystem
   command: raspi-config --expand-rootfs
     
-# Configure localisation
-- name: Ensure locale exists
-  locale_gen:
-    name: "{{ locale }}"
-    state: present
-- name: Removing default GB locale
-  locale_gen:
-    name: en_GB.UTF-8
-    state: absent
+- name: Configure localisation
+  tasks:
+    - name: Ensure locale exists
+      locale_gen:
+        name: "{{ locale }}"
+        state: present
+    - name: Removing default GB locale
+      locale_gen:
+        name: en_GB.UTF-8
+        state: absent
 
 - name: Set timezone
   timezone:
     name: "{{ timezone }}"
 
-# Update and Upgrade apt packages
 - name: Update apt packages
   apt:
     update_cache: yes
@@ -28,7 +28,28 @@
   apt:
     upgrade: dist
 
-# Changes hostname to provided variable
+- name: Configure wifi
+  tasks:
+    - name: Set Country Code
+      lineinfile:
+        path: /etc/wpa_supplicant/wpa_supplicant.conf
+        regex: "^country="
+        line: "country={{ wifi_country }}"
+        state: present
+
+    - name: Configure SSID and Password
+      blockinfile:
+        path: /etc/wpa_supplicant/wpa_supplicant.conf
+        block: |
+          network={
+              ssid="{{ wifi_ssid }}"
+              psk="{{ wifi_password }}"
+              scan_ssid=1
+          }
+
 - name: Changing hostname
   hostname:
     name: "{{ hostname }}"
+
+- name: update firmware
+  include: update-firmware.yml

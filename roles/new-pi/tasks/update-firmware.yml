@@ -1,0 +1,15 @@
+---
+- name: Update cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install rpi-update
+  apt:
+    name: rpi-update
+    state: present
+
+- name: Run kernel upgrade
+  command: /usr/bin/rpi-update
+  environment:
+    SKIP_WARNING: 1
