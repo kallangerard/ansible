@@ -1,3 +1,7 @@
+# ansible-playbook -K ./playbooks/icarus.yml
 ---
-
-  
+- hosts: localhost
+  gather_facts: yes
+  become: true
+  roles:
+    - ../roles/developer-workstation

@@ -5,6 +5,10 @@
     upgrade: full
     cache_valid_time: 3600
 
+- name: Gather package facts
+  package_facts:
+    manager: apt
+
 - name: Install packages
   apt: 
     name: "{{ packages }}"
@@ -23,7 +27,6 @@
       - fail2ban
       - logwatch
       - mosh
-      
 
 - name: Install Node.js
   tasks:
@@ -52,11 +55,11 @@
           - nodejs-legacy
           - npm
 
-    - name: Enable RPI Camera
-      lineinfile:
-        path: /etc/modules
-        line: bcm2832_v412
-        state: present
+- name: Enable RPI Camera
+  lineinfile:
+    path: /etc/modules
+    line: bcm2832_v412
+    state: present
 
 - name: Install .local domain resolution
   apt:

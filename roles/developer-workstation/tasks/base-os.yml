@@ -1,0 +1,67 @@
+---
+- name: Ensure os is up to date
+  apt:
+    update_cache: yes
+    upgrade: full
+    cache_valid_time: 300
+
+- name: Gather package facts
+  package_facts:
+    manager: "auto"
+
+- name: Add rpm key for VSC
+  apt_key:
+    url: "https://packages.microsoft.com/keys/microsoft.asc"
+    state: present
+
+- name: Update cache
+  apt:
+    update_cache: yes
+   
+- name: Install apt-transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: Install Visual Studio Code package
+  apt:
+    name: code
+    state: present
+    
+- name: Install Google Chrome
+  apt:
+    deb: "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+  when: "'google-chrome-stable' not in ansible_facts.packages"
+
+- name: Add Etcher debian repository
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 379CE192D401AB61
+    state: present
+
+- name: Add Etcher repository
+  apt_repository:
+    repo: "deb https://deb.etcher.io stable etcher"
+    state: present
+
+       
+- name: Installing packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - ansible
+      - balena-etcher-electron
+      - bash-completion
+      - curl
+      - git
+      - htop
+      - ranger
+      - python
+      - smartmontools
+      - snapd
+      - tmux
+      - tree
+      - wget

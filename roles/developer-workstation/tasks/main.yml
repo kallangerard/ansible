@@ -1,5 +1,4 @@
 ---
-# tasks file for developer-workstation
-name: Configure base OS
-include:
-  - base-os.yml
+# Tasks for developer-workstation
+- name: configure base-os
+  include: base-os.yml
