@@ -3,7 +3,7 @@
   apt:
     update_cache: yes
     upgrade: full
-    cache_valid_time: 300
+    cache_valid_time: 3600
 
 - name: Gather package facts
   package_facts:
@@ -13,10 +13,6 @@
   apt_key:
     url: "https://packages.microsoft.com/keys/microsoft.asc"
     state: present
-
-- name: Update cache
-  apt:
-    update_cache: yes
    
 - name: Install apt-transport-https
   apt:
@@ -33,7 +29,7 @@
     deb: "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
   when: "'google-chrome-stable' not in ansible_facts.packages"
 
-- name: Add Etcher debian repository
+- name: Add Etcher repository key
   apt_key:
     keyserver: keyserver.ubuntu.com
     id: 379CE192D401AB61
@@ -43,8 +39,14 @@
   apt_repository:
     repo: "deb https://deb.etcher.io stable etcher"
     state: present
+    update_cache: yes
 
-       
+- name: Install PPA for Ansible
+  apt_repository:
+    codename: "{{ repo_codename }}"
+    repo: ppa:ansible/ansible
+    state: present
+
 - name: Installing packages
   apt:
     name: "{{ packages }}"
@@ -60,8 +62,12 @@
       - htop
       - ranger
       - python
+      - python-pip
       - smartmontools
+      - software-properties-common
       - snapd
       - tmux
       - tree
+      - virtualbox-qt
+      - virtualbox-ext-pack
       - wget

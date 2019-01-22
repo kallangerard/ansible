@@ -2,3 +2,9 @@
 # Tasks for developer-workstation
 - name: configure base-os
   include: base-os.yml
+
+- name: Install Unetbootin
+  include: unetbootin.yml
+
+- name: Install Fonts
+  include: fonts.yml

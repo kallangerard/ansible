@@ -1,0 +1,17 @@
+---
+- name: Install PPA for Infinality
+  apt_repository:
+    codename: "{{ repo_codename }}"
+    repo: ppa:no1wantdthisname/ppa
+    state: present
+  register: infinalityppa
+
+- name: Install fotconfig-infinality
+  apt:
+    name: fontconfig-infinality
+    update_cache: yes
+  register: infinality
+
+- name: rebooting OS
+  reboot:
+  when: infinality.changed
