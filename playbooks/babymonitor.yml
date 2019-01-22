@@ -1,6 +1,6 @@
-# ansible-playbook -K /playbooks/babymonitor.yml
+# ansible-playbook -K ./playbooks/babymonitor.yml
 ---
-- hosts: babymonitor
+- hosts: babymonitor.local
   gather_facts: yes
   become: true
   roles:

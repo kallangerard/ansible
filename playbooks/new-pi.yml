@@ -1,6 +1,6 @@
 # ansible-playbook -K /playbooks/new-pi.yml
 ---
-- hosts: new-pi
+- hosts: raspberrypi
   gather_facts: yes
 
   vars_prompt:

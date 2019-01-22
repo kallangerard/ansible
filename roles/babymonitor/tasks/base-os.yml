@@ -28,76 +28,38 @@
       - logwatch
       - mosh
 
-- name: Install Node.js
-  tasks:
-    - name: add apt key for nodesource
-      apt_key:
-        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-        state: present
-
-    - name: Add Nodesource Apt Sources Version 6
-      apt_repository:
-        repo: "{{ repository }}"
-        state: present
-      vars:
-        repository:
-          - "deb https://deb.nodesource.com/node_6.x {{ ansible_distribution_release|lower }} main"
-          - "deb-src https://deb.nodesource.com/node_6.x {{ ansible_distribution_release|lower }} main"
-
-    
-    - name: Install NodeJS and NPM
-      apt:
-        name: "{{ packages }}"
-        state: present
-      vars:
-        packages:
-          - nodejs
-          - nodejs-legacy
-          - npm
+- name: Install Node JS
+  include: install-nodejs.yml
 
 - name: Enable RPI Camera
-  lineinfile:
-    path: /etc/modules
-    line: bcm2832_v412
-    state: present
+  include: rpi-camera.yml
 
-- name: Install .local domain resolution
+- name: Making directory for FruitNanny source code
+  file:
+    path: /opt/fruitnanny
+    owner: pi
+    group: pi
+    state: directory
+
+- name: Cloning FruitNanny source code
+  git:
+    repo: https://github.com/ivadim/fruitnanny
+    dest: /opt/fruitnanny
+    clone: yes
+
+- name: Install Gstreamer packages
   apt:
-    name: avahi-daemon
-    state: prsesent
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - gstreamer1.0-tools
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-plugins-bad
+      - gstreamer1.0-plugins-ugly
+      - gstreamer1.0-plugins-bad
+      - libgstreamer1.0-dev
+      - libgstreamer-plugins-base1.0-dev
+      - gstreamer1.0-alsa
 
-- name: Clone FruitNanny source code
-  tasks:
-    - name: Making directory for FruitNanny source code
-      file:
-        path: /opt/fruitnanny
-        owner: pi
-        group: pi
-        state: directory
-    
-    - name: Cloning FruitNanny source code
-      git:
-        repo: https://github.com/ivadim/fruitnanny
-        dest: /opt/fruitnanny
-        clone: yes    
-
-- name: Install Audio and Video Pipeline
-  tasks:
-    # - name: Install packages
-    #   apt:
-    #     name: "{{ packages }}"
-    #     state: present
-    #   vars:
-    #     packages:
-    #       - gstreamer1.0-tools
-    #       - gstreamer1.0-plugins-good
-    #       - gstreamer1.0-plugins-bad
-    #       - gstreamer1.0-plugins-ugly
-    #       - gstreamer1.0-plugins-bad
-    #       - libgstreamer1.0-dev
-    #       - libgstreamer-plugins-base1.0-dev
-    #       - gstreamer1.0-alsa
-    - name: Install gstreamer
-      apt:
-        name: gstreamer1.0
-        state: present
+# raspivid -t 0 -h 720 -w 1080 -fps 25 -hf -b 2000000 -o - | gst-launch-1.0 -v fdsrc ! h264parse !  rtph264pay config-interval=1 pt=96 ! gdppay ! tcpserversink host=YOUR_RPI_IP_ADDRESS port=5000
