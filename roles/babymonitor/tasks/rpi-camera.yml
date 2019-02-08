@@ -7,14 +7,21 @@
     state: present
   register: start_x
 
-- name: Enable gpu_mem 128
+- name: Enable gpu_mem 256
   lineinfile:
     path: /boot/config.txt
-    regex: "^gpu_mem=128"
-    line: "gpu_mem=128"
+    regex: "#?gpu_mem="
+    line: "gpu_mem=256"
     state: present
   register: gpumem
 
+# - name: Expose camera to /dev/video0
+#   lineinfile:
+#     path: /etc/modules-load.d/modules.conf
+#     line: "bcm2835-v412"
+#     state: present
+#   register: video0
+
 - name: Rebooting RPI
   reboot:
-  when: start_x.changed == True or gpumem.changed == True
+  when: start_x.changed or gpumem.changed == True

@@ -1,0 +1,21 @@
+---
+- name: Install VLC
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - vlc
+
+- name: Copy raspicam.service
+  copy:
+    src: raspicam.service
+    dest: /etc/systemd/system/
+  register: raspicam_unit
+
+- name: Enable raspicam service
+  systemd:
+    name: raspicam
+    state: started
+    enabled: yes
+    daemon_reload: yes

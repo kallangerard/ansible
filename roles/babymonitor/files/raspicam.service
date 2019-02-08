@@ -1,0 +1,12 @@
+[Unit]
+Description=Raspberry Pi Camera Stream Service
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+# ExecStartPre=/usr/bin/v4l2-ctl -c video_bitrate=4000000
+ExecStart=/usr/bin/raspivid -o - -t 0 -w 1280 -h 720 -fps 25 -b 5000000 | cvlc -vvv stream:///dev/stdin --sout '#rtp{access=udp,sdp=rtsp://:8554/stream}' :demux=h264 
+
+[Install]
+WantedBy=multi-user.target

@@ -2,3 +2,12 @@
 # tasks file for babymonitor
 - name: configuring base-os
   include: base-os.yml
+
+- name: Enable RPI Camera
+  include: rpi-camera.yml
+
+- name: Enable UV4L service
+  include: uv4l.yml
+
+- name: Configure Baby monitor
+  include: babymonitor.yml

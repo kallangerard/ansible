@@ -1,4 +1,4 @@
-# ansible-playbook -K /playbooks/new-pi.yml
+# ansible-playbook -K ./playbooks/new-pi.yml
 ---
 - hosts: raspberrypi
   gather_facts: yes
@@ -6,13 +6,13 @@
   vars_prompt:
     
     - name: hostname
-      prompt: "Please enter the hostname for your new Raspberry Pi:"
+      prompt: "Please enter the hostname for your new Raspberry Pi"
       private: no
     - name: wifi_ssid
-      prompt: "Please enter the WiFi SSID for your new device:"
+      prompt: "Please enter the WiFi SSID for your new device"
       private: no
     - name: wifi_password
-      prompt: "Please enter the WiFi password for your new device:"
+      prompt: "Please enter the WiFi password for your new device"
       private: no
 
   vars:

@@ -1,0 +1,13 @@
+---
+
+- name: Copy config for uv4l-raspicam.conf
+  copy:
+    src: uv4l-raspicam.conf
+    dest: /etc/uv4l/
+  register: raspicam
+
+- name: Restart uv4l service
+  service:
+    name: uv4l-raspicam
+    state: restarted
+  when: raspicam.changed == True
