@@ -1,0 +1,25 @@
+---
+- name: Install flat-remix ppa
+  apt_repository:
+    repo: ppa:daniruiz/flat-remix
+    codename: "{{ repo_codename }}"
+    state: present
+  register: flatremix
+
+- name: Update cache
+  apt:
+    update_cache: yes
+  when: flatremix.changed
+
+- name: Install flat-remix-gtk
+  apt:
+    name: flat-remix-gtk
+    state: present
+
+- name: Set Flat-Remix Theme
+  become_user: "{{ ansible_user }}"
+  # Double & Single "'quotes'" needed for dconf value not key
+  dconf:
+      key: "/org/cinnamon/desktop/interface/gtk-theme"
+      value: "'Flat-Remix-GTK'"
+      state: present
