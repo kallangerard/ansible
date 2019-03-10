@@ -1,10 +1,4 @@
 ---
-- name: Ensure os is up to date
-  apt:
-    update_cache: yes
-    upgrade: full
-    cache_valid_time: 3600
-
 - name: Gather package facts
   package_facts:
     manager: "auto"
@@ -43,15 +37,28 @@
 
 - name: Install PPA for Ansible
   apt_repository:
-    codename: "{{ repo_codename }}"
+    # codename: "{{ repo_codename }}"
     repo: ppa:ansible/ansible
     state: present
+
+- name: Install Pip Packages
+  pip:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - psutil
+
+- name: Ensure os is up to date
+  apt:
+    update_cache: yes
+    upgrade: full
+    cache_valid_time: 3600
 
 - name: Installing packages
   apt:
     name: "{{ packages }}"
     state: present
-    update_cache: yes
   vars:
     packages:
       - ansible
@@ -70,17 +77,6 @@
       - snapd
       - tmux
       - tree
-      - virtualbox-qt
-      - virtualbox-ext-pack
+      #   - virtualbox-qt
+      #   - virtualbox-ext-pack
       - wget
-
-- name: Install Pip Packages
-  pip:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - psutil
-
-- name: Modify nsswitch
-  include: nsswitch.yml
