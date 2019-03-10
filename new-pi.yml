@@ -1,0 +1,18 @@
+# ansible-playbook -K ./playbooks/new-pi.yml
+---
+- hosts: raspberrypi
+  gather_facts: yes
+
+  vars_prompt:
+    
+    - name: hostname
+      prompt: "Please enter the hostname for your new Raspberry Pi"
+      private: no
+
+  vars:
+    wifi_country: "AU"
+    timezone: Australia/Perth
+
+  become: true
+  roles:
+    - ../roles/new-pi
