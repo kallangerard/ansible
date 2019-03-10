@@ -41,14 +41,6 @@
     repo: ppa:ansible/ansible
     state: present
 
-- name: Install Pip Packages
-  pip:
-    name: "{{ packages }}"
-    state: present
-  vars:
-    packages:
-      - psutil
-
 - name: Ensure os is up to date
   apt:
     update_cache: yes
@@ -72,12 +64,19 @@
       - ranger
       - python
       - python3
+      - python3-pip
       - python-pip
       - smartmontools
       - software-properties-common
       - snapd
       - tmux
       - tree
-      #   - virtualbox-qt
-      #   - virtualbox-ext-pack
       - wget
+
+- name: Install Pip Packages
+  pip:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - psutil
