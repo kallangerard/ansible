@@ -13,9 +13,9 @@
     name: apt-transport-https
     state: present
 
-- name: Install Visual Studio Code package
-  apt:
-    name: code
+- name: Install Visual Studio Code repo
+  apt_repository:
+    repo: "deb https://packages.microsoft.com/repos/vscode stable main"
     state: present
 
 - name: Install Google Chrome
@@ -64,6 +64,7 @@
       - ansible
       - balena-etcher-electron
       - bash-completion
+      - code
       - curl
       - darktable
       - git
