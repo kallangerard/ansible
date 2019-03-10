@@ -14,14 +14,14 @@
     name: [
       "uv4l",
       "uv4l-raspicam",
-      "uv4l-raspicam-extras",
+      # "uv4l-raspicam-extras",
       "uv4l-server",
       ]
-    state: present
+    state: absent
     update_cache: yes
     cache_valid_time: 3600
   register: uv4l
 
-- name: Reboot to enable u4vl
-  reboot:
-  when: uv4l.changed == True
+# - name: Reboot to enable u4vl
+#   reboot:
+#   when: uv4l.changed == True

@@ -15,13 +15,13 @@
     state: present
   register: gpumem
 
-# - name: Expose camera to /dev/video0
-#   lineinfile:
-#     path: /etc/modules-load.d/modules.conf
-#     line: "bcm2835-v412"
-#     state: present
-#   register: video0
+- name: Expose camera to /dev/video0
+  lineinfile:
+    path: /etc/modules-load.d/modules.conf
+    line: "bcm2835-v4l2"
+    state: present
+  register: video0
 
 - name: Rebooting RPI
   reboot:
-  when: start_x.changed or gpumem.changed == True
+  when: start_x.changed or gpumem.changed or video0.changed == True
