@@ -1,0 +1,28 @@
+---
+# tasks file for base-server
+
+- name: Set authorised key exclusively
+  authorized_key:
+    user: {{ server_user }}
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+    exclusive: True
+
+- name: Install base-os packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - avahi-local
+      - bash-completion
+      - git
+      - glances
+      - htop
+      - iftop
+      - iotop
+      - nmap      
+      - openssh-server
+      - python
+      - screen
+      - tmux
+
