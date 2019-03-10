@@ -4,15 +4,15 @@
 - name: Expanding Filesystem
   command: raspi-config --expand-rootfs
     
-- name: Ensure locale exists
-  locale_gen:
-    name: "{{ locale }}"
-    state: present
+# - name: Ensure locale exists
+#   locale_gen:
+#     name: "{{ locale }}"
+#     state: present
 
-- name: Removing default GB locale
-  locale_gen:
-    name: en_GB.UTF-8
-    state: absent
+# - name: Removing default GB locale
+#   locale_gen:
+#     name: en_GB.UTF-8
+#     state: absent
 
 - name: Set timezone
   timezone:
@@ -36,8 +36,8 @@
   hostname:
     name: "{{ hostname }}"
 
-- name: configure wifi
-  include: update-wifi.yml
+# - name: configure wifi
+#   include: update-wifi.yml
 
 - name: update firmware
   include: update-firmware.yml
