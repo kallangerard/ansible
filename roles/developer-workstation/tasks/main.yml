@@ -6,5 +6,5 @@
 - name: Modify nsswitch
   include: nsswitch.yml
 
-- name: Install Fonts
-  include: fonts.yml
+# - name: Install Fonts
+#   include: fonts.yml
