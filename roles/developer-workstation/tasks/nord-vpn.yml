@@ -1,0 +1,12 @@
+---
+- name: Install Nordvpn deb
+  apt:
+    deb: "https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn-release_1.0.0_all.deb"
+  when: "'nordvpn-release' not in ansible_facts.packages"
+
+- name: Update to latest version
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    name: nordvpn-release
+    state: latest
