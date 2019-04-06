@@ -46,7 +46,7 @@
 
 - name: Install PPA for Ansible
   apt_repository:
-    # codename: "{{ repo_codename }}"
+    # codename: "{{  }}"
     repo: ppa:ansible/ansible
     state: present
 
@@ -100,4 +100,5 @@
     state: present
   vars:
     packages:
+      - pipenv
       - psutil
