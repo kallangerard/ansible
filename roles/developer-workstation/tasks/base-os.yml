@@ -65,6 +65,7 @@
     packages:
       - ansible
       - aptitude
+      - awscli
       - balena-etcher-electron
       - bash-completion
       - code
