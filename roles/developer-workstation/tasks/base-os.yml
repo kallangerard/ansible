@@ -33,7 +33,16 @@
   apt_repository:
     repo: "deb https://deb.etcher.io stable etcher"
     state: present
-    update_cache: yes
+
+- name: Add Insomnia rpm key
+  apt_key:
+    url: "https://insomnia.rest/keys/debian-public.key.asc"
+    state: present
+
+- name: Add Insomnia repository
+  apt_repository:
+    repo: "deb https://dl.bintray.com/getinsomnia/Insomnia /"
+    state: present
 
 - name: Install PPA for Ansible
   apt_repository:
@@ -41,16 +50,17 @@
     repo: ppa:ansible/ansible
     state: present
 
-- name: Ensure os is up to date
-  apt:
-    update_cache: yes
-    upgrade: full
-    cache_valid_time: 3600
+# - name: Ensure os is up to date
+#   apt:
+#     update_cache: yes
+#     # upgrade: full
+#     cache_valid_time: 3600
 
 - name: Installing packages
   apt:
     name: "{{ packages }}"
     state: present
+    update_cache: yes
   vars:
     packages:
       - ansible
@@ -62,6 +72,7 @@
       - darktable
       - git
       - htop
+      - insomnia
       - python
       - python-pip
       - python3
@@ -73,6 +84,15 @@
       - tmux
       - tree
       - wget
+
+# Need Ansible 2.8
+# - name: Install Snap Packages
+#   snap:
+#     name: "{{ packages }}"
+#     state: present
+#   vars:
+#     packages:
+#       - insomnia
 
 - name: Install Pip Packages
   pip:

@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  become: yes
+  roles:
+    # - surface-pro
+    - developer-workstation
+    

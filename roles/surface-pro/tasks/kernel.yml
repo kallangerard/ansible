@@ -1,0 +1,29 @@
+---
+- name: Install dependencies
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: present
+  vars:
+    packages:
+      - git
+      - curl
+      - wget
+      - sed
+
+- name: Create directory for script
+  file:
+    path: /home/kallan/linux-surface
+    state: directory
+
+- name: Clone git repo
+  git:
+    repo: https://github.com/jakeday/linux-surface.git
+    dest: /home/kallan/linux-surface
+    depth: 1
+
+- name: Run script
+  command: sh /home/kallan/linux-surface/setup.sh
+
+- name: Reboot
+  reboot:

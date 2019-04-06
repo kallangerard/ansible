@@ -1,2 +1,3 @@
 ---
 # tasks file for surface-pro
+- include: kernel.yml
