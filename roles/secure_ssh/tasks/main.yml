@@ -1,0 +1,36 @@
+---
+# tasks file for secure-ssh
+- name: Set authorised key exclusively
+  become: yes
+  authorized_key:
+    user: "{{ ssh_user }}"
+    state: present
+    key: "{{ lookup('file', ssh_identity_key) }}"
+    # exclusive: True
+  register: add_identity_key
+  when: ssh_identity_key is defined and ssh_user is defined
+
+- name: Disable empty password login
+  become: yes
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    regexp: "^#?PermitEmptyPasswords"
+    line: "PermitEmptyPasswords no"
+  notify: restart sshd
+
+- name: Disable remote root login
+  become: yes
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin no"
+  notify: restart sshd
+
+- name: Disable password login
+  become: yes
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    # regexp: "^(\#\s*)?PasswordAuthentication "
+    line: "PasswordAuthentication no"
+  when: add_identity_key is success and not add_identity_key is skipped
+  notify: restart sshd

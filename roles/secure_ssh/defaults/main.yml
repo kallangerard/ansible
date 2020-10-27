@@ -1,0 +1,14 @@
+---
+# defaults file for secure-ssh
+
+# sshd daemon
+sshd: ssh
+
+# ssh config location
+sshd_config: /etc/ssh/sshd_config
+
+# ssh user
+ssh_user: kallan
+
+# ssh public key
+ssh_identity_key: ~/.ssh/id_rsa.pub
