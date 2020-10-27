@@ -1,0 +1,49 @@
+---
+- name: Install required packages
+  apt:
+    name: "{{ docker_apt_packages_prerequisites }}"
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Remove old packages
+  apt:
+    name: "{{ docker_apt_packages_absent }}"
+    state: absent
+
+- name: Add Docker Repository Key
+  apt_key:
+    id: "{{ docker_repository_key_id }}"
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  vars:
+    arch: >
+      {%- if ansible_architecture == "armv7l" -%}
+      armhf
+      {%- else -%}
+      amd64
+      {%- endif -%}
+  apt_repository:
+    repo: >
+      deb [arch={{ arch }}] https://download.docker.com/linux/debian
+      {{ ansible_distribution_release }} stable
+    state: present
+    update_cache: yes
+
+- name: Install Docker CE
+  apt:
+    name: "{{ docker_apt_packages _prerequisites}}"
+    state: present
+
+- name: Start Docker Service
+  service:
+    name: docker
+    state: started
+
+- name: Testing Docker with hello-world
+  docker_container:
+    name: hello-world
+    image: hello-world
+    detach: no
+    cleanup: yes
