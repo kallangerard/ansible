@@ -1,0 +1,27 @@
+---
+- name: Delegate to hypervisor
+  delegate_to: "{{ hypervisor }}"
+  become: no
+  block:
+    - name: Create mappings for uid
+      blockinfile:
+        path: /etc/pve/nodes/pve0/lxc/{{node_id}}.conf
+        block: |
+          lxc.idmap = u 0 100000 {{ uid }}
+          lxc.idmap = g 0 100000 {{ gid }}
+          lxc.idmap = u {{ uid }} {{ uid }} 1
+          lxc.idmap = g {{ gid }} {{ gid }} 1
+          lxc.idmap = u {{ uid + 1}} {{ uid + 100000 }} 64530
+          lxc.idmap = g {{ gid + 1}} {{ gid + 100000 }} 64530
+
+    - name: Set subuid
+      lineinfile:
+        path: /etc/subuid
+        regexp: "^root:{{ uid }}:1"
+        line: root:{{ uid }}:1
+
+    - name: Set subgid
+      lineinfile:
+        path: /etc/subgid
+        regexp: "^root:{{ gid }}:1"
+        line: root:{{ gid }}:1
