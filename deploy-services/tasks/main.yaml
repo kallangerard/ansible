@@ -1,0 +1,73 @@
+---
+- name: Remove config directory
+  become: yes
+  file:
+    state: absent
+    path: /var/opt/services
+
+- name: Replace config directory
+  become: yes
+  file:
+    state: directory
+    path: /var/opt/services
+    owner: '{{ ansible_user | default(ansible_user_id) }}'
+
+- name: Copy files
+  template:
+    src: '{{ item }}'
+    dest: /var/opt/services/{{ item | basename | regex_replace('\.j2$', '') }} # required. Location to render the template to on the remote machine.
+    mode: '0755'
+  with_fileglob:
+    - 'templates/{{ inventory_hostname_short }}/*.j2'
+
+- name: Create appdata directory
+  become: yes
+  file:
+    state: directory
+    path: /var/opt/appdata
+    owner: '{{ ansible_user | default(ansible_user_id) }}'
+
+- name: NFS Paths
+  when: nfs_paths is defined
+  block:
+    - name: Create ZFS Datasets
+      command: zfs create {{ item.path }}/{{ item.name }}
+      failed_when:
+        - ("dataset already exists" not in result.stderr)
+        - result.rc != 0
+      changed_when: result.rc == 0
+      delegate_to: '{{ item.hostname }}'
+      loop: '{{ nfs_paths }}'
+      register: result
+
+    - name: Set zfs nfs shares
+      command: "zfs set sharenfs='rw=@{{ node_cidr }},sync,no_root_squash,no_subtree_check,sec=sys' {{ item.path }}/{{ item.name }}"
+      delegate_to: '{{ item.hostname }}'
+      when: item.nfs
+      loop: '{{ nfs_paths }}'
+
+    - name: Enable zfs nfs shares
+      command: 'zfs share {{ item.path }}/{{ item.name }}'
+      delegate_to: '{{ item.hostname }}'
+      when: item.nfs
+      loop: '{{ nfs_paths }}'
+
+    - name: Change zfs dataset permissions
+      file:
+        path: '{{ item.path }}/{{ item.name }}'
+        state: directory
+        owner: '{{ item.owner }}'
+        group: '{{ item.group }}'
+        recurse: yes
+      delegate_to: '{{ item.hostname }}'
+      when: item.owner is defined and item.group is defined
+      loop: '{{ nfs_paths }}'
+
+- name: Up Docker Compose
+  become: yes
+  command:
+    cmd: >
+      docker-compose up
+      --detach
+      --remove-orphans
+    chdir: /var/opt/services/

@@ -1,0 +1,95 @@
+---
+  # Add Hard Disk Drives
+- name: Get Machine Config
+  become: no
+  command: qm config {{ node_id }}
+  register: qm_config
+  delegate_to: "{{ hypervisor }}"
+
+- name: Add Data Disks
+  become: no
+  command: >
+    qm set {{ node_id }}
+    -scsi{{ item.key }}
+    {{ item.source }}
+  when: qm_config.stdout is not search(item.source)
+  loop: "{{ mergerfs_data_disks }}"
+  delegate_to: "{{ hypervisor }}"
+  notify: reboot os
+
+# - name: Add Parity Disks
+#   command: >
+#     qm set {{ node_id }}
+#     -scsi{{ item.key }}
+#     {{ item.source }}
+#   when: qm_config.stdout is not search(item.source)
+#   loop: "{{ mergerfs_parity_disks }}"
+#   delegate_to: "{{ hypervisor }}"
+#   notify: reboot os
+
+- name: Create Mount Directories for Data Disks
+  become: yes
+  file:
+    dest: "/mnt/data{{ item.key }}"
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: "0777"
+  loop: "{{ mergerfs_data_disks }}"
+
+
+- name: Mount Data Disks
+  become: yes
+  mount: 
+    path: /mnt/data{{ item.key }}
+    src: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi{{ item.key }}-part1
+    fstype: "{{ item.fs }}"
+    state: mounted
+  loop: "{{ mergerfs_data_disks }}"
+
+- name: Install mergerFS from deb
+  become: yes
+  apt:
+    deb: "{{ mergerfs_deb }}"
+    state: present
+
+- name: Create mountpoint for Mergerfs
+  become: yes
+  file:
+    dest: "/mnt/storage"
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: "0777"
+
+- name: Mount MergerFS Array
+  become: yes
+  mount:
+    name: /mnt/storage
+    src: /mnt/data*
+    opts: use_ino,cache.files=off,dropcacheonclose=true,allow_other,minfreespace=50G,fsname=mergerfs,category.create=mfs
+    fstype: fuse.mergerfs
+    state: mounted
+
+
+# - name: Create Mount Directories for Parity Disks
+#   become: yes
+#   file:
+#     dest: "/mnt/parity{{ item.key }}"
+#     state: directory
+#     owner: nobody
+#     group: nogroup
+#     mode: "0777"
+#   loop: "{{ mergerfs_parity_disks }}"
+
+# - name: Mount Parity Disks
+#   become: yes
+#   mount: 
+#     path: /mnt/parity{{ item.key }}
+#     src: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi{{ item.key }}-part1
+#     fstype: "{{ item.fs }}"
+#     state: mounted
+#   loop: "{{ mergerfs_parity_disks }}"
+
+# Build MergerFS
+# Build SnapRaid
