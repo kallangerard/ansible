@@ -1,0 +1,48 @@
+---
+  # Add Hard Disk Drives
+- name: Get Machine Config
+  command: qm config {{ node_id }}
+  register: qm_config
+  delegate_to: "{{ hypervisor }}"
+
+- name: Add Data Disks
+  command: >
+    qm set {{ node_id }}
+    -scsi{{ item.key }}
+    {{ item.src }}
+  when: qm_config.stdout is not search(item.src)
+  loop: "{{ mergerfs_data_disks }}"
+  delegate_to: "{{ hypervisor }}"
+  notify: reboot os
+
+- name: Create Mount Directories for Data Disks
+  file:
+    dest: "/mnt/data{{ item.key }}"
+    state: directory
+  loop: "{{ mergerfs_data_disks }}"
+
+- name: Mount Data Disks
+  mount: 
+    path: /mnt/data{{ item.key }}
+    src: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi{{ item.key }}-part1
+    fstype: "{{ item.fs }}"
+    state: mounted
+  loop: "{{ mergerfs_data_disks }}"
+
+- name: Install mergerFS from deb
+  apt:
+    deb: "{{ mergerfs_deb }}"
+    state: present
+
+- name: Create mountpoint for Mergerfs
+  file:
+    dest: "{{mergerfs_pool_mount}}"
+    state: directory
+
+- name: Mount MergerFS Array
+  mount:
+    name: "{{mergerfs_pool_mount}}"
+    src: /mnt/data*
+    opts: use_ino,cache.files=off,dropcacheonclose=true,allow_other,minfreespace=50G,fsname=mergerfs,category.create=mfs
+    fstype: fuse.mergerfs
+    state: mounted
