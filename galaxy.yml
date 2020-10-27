@@ -1,0 +1,10 @@
+---
+namespace: kallan
+name: common
+version: "1.0.1"
+readme: "README.md"
+authors:
+    - "Kallan Gerard <kallan.gerard@gmail.com> (https://kallangerard.github.io)"
+tags:
+    - collection
+repository: "https://www.github.com/kallangerard/ansible"
